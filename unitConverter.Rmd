@@ -1,0 +1,83 @@
+---
+title: "unitConverter"
+author: "Aifyer"
+date: "10/10/2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = F,warning = F,comment="")
+```
+
+## Why I write a unitConverter
+
+- Each culture has its own common used unit system. Kilograms, Kilometers, Celcius are widely adopted in Asian countries like Japan, Singapore or China, while Pounds, Miles and Fahrenheits are commonly used in the western countries like USA.  
+- When we travel between countries, we may face the problem of inconvenience in the units conversion. - So here I write a simple shiny app for the unit conversion.
+- There is already some complete unit converter online. To save both time and shiny space, this small app is only for conversion among the 3 unit pairs: Pound/Kilogram, Mile/Kilometer and Fahrenhei/Celsius.
+
+## The idea of unitConverter
+
+- To make the unitConverter, I need 3 input: the original unit to convert from, the goal unit convert to, and the original value to convert. I use selectInput for the units and numericInput for the value. In the main panel, I have the documentaion h5 text to explain the limit of this app, and a h3 text output with goal unit value.
+- In the server, the most important information I need to add is the ratio between original and goal units. To make the output text, I just need to paste the orignial value/unit and goal value/unit to a equation. 
+
+
+## Here is the ui.R code
+
+```{r ui.R,eval=FALSE}
+library(shiny)
+shinyUI(fluidPage(
+  titlePanel("Simple Units Converter"),
+  sidebarLayout(
+    sidebarPanel(
+          selectInput("funit","The unit you want to convert From:",
+      c("Pound","Kilogram","Mile","Kilometer","Fahrenheit","Celsius"),
+                      selected = "Pound"),
+          selectInput("tunit","The unit you want to convert To:",
+      c("Pound","Kilogram","Mile","Kilometer","Fahrenheit","Celsius"),
+                      selected = "Kilogram"),
+          numericInput("val","The value you want to convert:",value=1)
+    ),
+    mainPanel(
+      h5("only for Pound/Kilogram, Mile/Kilometer and Fahrenhei/Celsius"),
+          h3(textOutput("text1"))
+    ))
+))
+```
+
+## Here is the server.R code
+
+```{r server.R,eval=FALSE}
+shinyServer(function(input, output) {
+      output$text1 = renderText({
+      f<- input$funit;t<- input$tunit;va<- input$val;out <-1
+      if (f=="Pound" & t=="Kilogram"){out<- round(va*0.45359237,2)
+      }else if(f=="Kilogram" & t=="Pound"){out <- round(va*2.20462262,2)
+      }else if(f=="Mile" & t=="Kilometer"){out<- round(va*1.609344,2)
+      }else if(f=="Kilometer" & t=="Mile"){out<- round(va*0.621371192,2)
+      }else if(f=="Fahrenheit" & t=="Celsius"){ out<- round((va-32)/1.8,2)
+      }else if(f=="Celsius" & t=="Fahrenheit"){ out<- round(1.8*va+32,2)
+      }else if(f==t){out<-va
+      }else{out<- "Too complicated for me!"}
+      paste(va, " ",f," = ",out, " ",t)
+      })})
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
